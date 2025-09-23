@@ -2,7 +2,7 @@
 
 Welcome to my AI project portfolio! Here you will find a collection of post-degree projects focused on **machine learning, deep learning, and data-driven solutions**, showcasing my skills in **biomedical engineering and software development**.  
 
-> Note: While I have worked on electronics projects (e.g., measuring body impedance to estimate weight), this repository is dedicated exclusively to AI projects.
+> Note: While I have worked on electronics projects (e.g., measuring body impedance to estimate weight), this repository is dedicated exclusively to AI projects).
 
 ## About Me
 I am a biomedical engineer passionate about creating solutions that combine technology, data, and real-world applications. This portfolio demonstrates my approach to **problem-solving, analytical thinking, and AI-driven development**.
