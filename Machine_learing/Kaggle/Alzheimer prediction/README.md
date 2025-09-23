@@ -4,6 +4,7 @@ Kaggle project to predict whether a patient has Alzheimer's Disease based on hea
 
 - Models: SVM, Random Forest, XGBoost  
 - Goal: Practice feature engineering and model evaluation
+- Score (f1): 0.93687
 
 
 
