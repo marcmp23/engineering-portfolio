@@ -1,59 +1,50 @@
-def get_data_kaggle_competition(folder_to_save, competition_name, kaggle_json_path):
-    """
-    Download and extract a Kaggle competition dataset in Python.
-    Deletes the zip file after extraction to save space.
+from pathlib import Path
+import zipfile
+import os
+import subprocess
+import shutil
 
-    Parameters
-    ----------
-    folder_to_save : str or pathlib.Path
-        Folder where the dataset will be saved.
-    competition_name : str
-        Exact name of the Kaggle competition.
-    kaggle_json_path: str
-        Path to the personal kaggle.json file.
+def download_kaggle_competition(slug, dest_path="/content/kaggle_data"):
     """
-    from pathlib import Path
-    import zipfile
-    import kaggle
-    import os
-    import shutil
-
-    # Asegurarse de que folder_to_save es un Path
-    folder_to_save = Path(folder_to_save)
+    Download and extract a Kaggle competition dataset.
     
-    # Crear la carpeta si no existe
-    if folder_to_save.is_dir():
-        print(f"{folder_to_save} directory exists.")
+    Assumes kaggle.json is already configured in ~/.kaggle/
+    
+    slug: str -> Kaggle competition name
+    dest_path: str -> folder where the dataset will be saved
+    """
+    dest_path = Path(dest_path)
+    
+    # Check if folder exists
+    if dest_path.is_dir():
+        # If folder exists but is empty, remove and recreate
+        if not any(dest_path.iterdir()):
+            print(f"{dest_path} exists but is empty, recreating...")
+            shutil.rmtree(dest_path)
+            dest_path.mkdir(parents=True, exist_ok=True)
+        else:
+            print(f"{dest_path} directory exists and is not empty.")
     else:
-        print(f"Did not find {folder_to_save} directory, creating...")
-        folder_to_save.mkdir(parents=True, exist_ok=True)
-
-    # Configurar kaggle.json dinámicamente
-    kaggle_dir = Path("/root/.kaggle")
-    kaggle_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy(kaggle_json_path, kaggle_dir / "kaggle.json")
-    os.chmod(kaggle_dir / "kaggle.json", 0o600)
-    print(f"kaggle.json configured at {kaggle_dir / 'kaggle.json'}")
-
-    # Descargar datos de la competición
-    print(f"Downloading {competition_name} into {folder_to_save}...")
-    kaggle.api.competition_download_files(competition_name, path=str(folder_to_save))
-
-    # Construir ruta del archivo zip
-    zip_file = folder_to_save / f"{competition_name}.zip"
-
-    # Descomprimir y eliminar zip
-    if zip_file.exists():
-        print(f"Extracting {zip_file}...")
+        # If folder does not exist, create it
+        print(f"Did not find {dest_path} directory, creating...")
+        dest_path.mkdir(parents=True, exist_ok=True)
+    
+    # Install Kaggle API if not already installed
+    try:
+        import kaggle
+    except ImportError:
+        print("Installing Kaggle API...")
+        os.system("pip install kaggle --quiet")
+    
+    # Download the competition dataset
+    print(f"Downloading competition '{slug}' to {dest_path} ...")
+    subprocess.run(f"kaggle competitions download -c {slug} -p {dest_path}", shell=True, check=True)
+    
+    # Extract all zip files in the destination folder
+    for zip_file in dest_path.glob("*.zip"):
+        print(f"Extracting {zip_file} ...")
         with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-            zip_ref.extractall(folder_to_save)
-        print("Extraction complete.")
-
-        # Eliminar zip
-        os.remove(zip_file)
-        print(f"Deleted zip file {zip_file} to save space.")
-    else:
-        print(f"Error: {zip_file} not found. Check if download was successful.")
-
-    # Listar archivos descargados
-    print("Downloaded and extracted files:", list(folder_to_save.iterdir()))
+            zip_ref.extractall(dest_path)
+    
+    # Print the final list of files
+    print("Done! Files in destination:", list(dest_path.iterdir()))
