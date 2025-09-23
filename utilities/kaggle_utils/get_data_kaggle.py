@@ -4,14 +4,15 @@ import os
 import subprocess
 import shutil
 
-def download_kaggle_competition(slug, dest_path="/content/kaggle_data"):
+def download_kaggle(slug, dest_path="/content/kaggle_data", type_="competition"):
     """
-    Download and extract a Kaggle competition dataset.
+    Download and extract a Kaggle competition or dataset.
     
     Assumes kaggle.json is already configured in ~/.kaggle/
     
-    slug: str -> Kaggle competition name
+    slug: str -> Kaggle competition name or dataset slug (user/dataset)
     dest_path: str -> folder where the dataset will be saved
+    type_: str -> "competition" or "dataset"
     """
     dest_path = Path(dest_path)
     
@@ -36,9 +37,15 @@ def download_kaggle_competition(slug, dest_path="/content/kaggle_data"):
         print("Installing Kaggle API...")
         os.system("pip install kaggle --quiet")
     
-    # Download the competition dataset
-    print(f"Downloading competition '{slug}' to {dest_path} ...")
-    subprocess.run(f"kaggle competitions download -c {slug} -p {dest_path}", shell=True, check=True)
+    # Download based on type
+    if type_ == "competition":
+        print(f"Downloading competition '{slug}' to {dest_path} ...")
+        subprocess.run(f"kaggle competitions download -c {slug} -p {dest_path}", shell=True, check=True)
+    elif type_ == "dataset":
+        print(f"Downloading dataset '{slug}' to {dest_path} ...")
+        subprocess.run(f"kaggle datasets download -d {slug} -p {dest_path}", shell=True, check=True)
+    else:
+        raise ValueError("type_ must be 'competition' or 'dataset'")
     
     # Extract all zip files in the destination folder
     for zip_file in dest_path.glob("*.zip"):
