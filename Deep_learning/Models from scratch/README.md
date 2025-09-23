@@ -14,7 +14,6 @@ The goal is to understand the **mathematical foundations** and the **step-by-ste
 ---
 
 ## Planned Extensions
-- Logistic Regression (baseline model)  
 - Convolutional Neural Network (CNN)  
 - Recurrent Neural Network (RNN)  
 - Transformer (attention-based model)  
