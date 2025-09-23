@@ -42,7 +42,8 @@ def get_data_kaggle_competition(folder_to_save, competition_name):
         import kaggle
     except ImportError:
         import sys
-        !{sys.executable} -m pip install kaggle --quiet
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "kaggle", "--quiet"])
+
 
     # Step 3: Upload Kaggle token
     from google.colab import files
